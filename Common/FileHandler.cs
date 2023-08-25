@@ -20,7 +20,15 @@ namespace Common
         {
             if (!disposed)
             {
-                
+                if (disposing)
+                {
+                    if (Stream != null)
+                    {
+                        Stream.Dispose();
+                        Stream.Close();
+                        Stream = null;
+                    }
+                }
                 disposed = true;
             }
         }
