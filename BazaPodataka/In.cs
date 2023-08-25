@@ -14,5 +14,43 @@ namespace BazaPodataka
         public static string CurrentFile = string.Empty;
 
         public static List<int> LoadedIds = new List<int>();
+    
+        public static List<int> LoadedIds = new List<int>();
+
+        public static void Save(List<Load> loads, Audit audit)
+        {
+            if (loads != null)
+            {
+                ImportedFile importedFile = new ImportedFile() { FileName = CurrentFile, Id = ++ImportedFilesCounter };
+                bool exists = false;
+
+                foreach (Load load in loads)
+                {
+                    foreach (Load l in Loads.Values)
+                    {
+                        
+                    }
+
+                    // create a new record
+                    if (exists == false) // it doesn't exist
+                    {
+                        load.Id = ++LoadsCounter;
+                        load.ImportedFileId = importedFile.Id;
+                        Loads.Add(load.Id, load);
+                    }
+                }
+
+            }
+            else
+            {
+                
+            }
+        }
+
+        // for delegate & event
+        public void SaveDb(List<Load> loads)
+        {
+           
+        }
     }
 }
