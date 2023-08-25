@@ -17,7 +17,10 @@ namespace Konzola
 
                 if (Directory.Exists(putanja))
                 {
-                    
+                    string[] files = Directory.GetFiles(putanja);
+
+                    if (files.Length == 0)
+                        Console.WriteLine("Nema nijedan CSV");
                     else
                     {
                         foreach (var file in files)
@@ -29,7 +32,16 @@ namespace Konzola
                                 csv.Dispose();
                                 csv.Close();
 
-                               
+                                stream.Position = 0;
+                                using (FileHandler fl = new FileHandler() { Stream = stream, FileName = Path.GetFileName(file) })
+                                {
+                                    // call service actions
+                                    ChannelFactory<IService> service = new ChannelFactory<IService>("Service");
+                                    IService service_proxy = service.CreateChannel();
+                                    service_proxy.LoadSaveDatabase(fl.Stream, fl.FileName);
+
+                                    fl.Dispose();
+                                }
                             }
                         }
                     }
