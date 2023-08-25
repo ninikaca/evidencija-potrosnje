@@ -16,11 +16,19 @@ namespace Common
         [DataMember]
         private bool disposed = false;
 
-        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                
+                disposed = true;
+            }
+        }
 
         public void Dispose()
         {
-           
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
