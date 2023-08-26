@@ -41,6 +41,13 @@ namespace BazaPodataka
                     }
                 }
 
+                // save log to imported files dictonary
+                ImportedFiles.Add(ImportedFilesCounter, importedFile);
+
+                // save audit about successfully imported file
+                Audit a = new Audit(DateTime.Now, MessageType.Info, "Datoteka " + In.CurrentFile + " je uspešno pročitana");
+                a.Id = ++AuditsCounter;
+                Audits.Add(a.Id, a);
             }
             else
             {
