@@ -72,7 +72,26 @@ namespace BazaPodataka
         // for delegate & event
         public void SaveDb(List<Load> loads)
         {
-           
+            foreach (Load load in loads)
+            {
+                if (Loads.TryGetValue(load.Id, out Load change))
+                {
+                    if (load.AbsolutePercentageDeviation != -1 && load.AbsolutePercentageDeviation != change.AbsolutePercentageDeviation)
+                    {
+                        change.AbsolutePercentageDeviation = load.AbsolutePercentageDeviation;
+                    }
+
+                    if (load.SquaredDeviation != -1 && load.SquaredDeviation != change.SquaredDeviation)
+                    {
+                        change.SquaredDeviation = load.SquaredDeviation;
+                    }
+
+                    if (load.ImportedFileId != -1 && load.ImportedFileId != change.ImportedFileId)
+                    {
+                        change.ImportedFileId = load.ImportedFileId;
+                    }
+                }
+            }
         }
     }
 }
