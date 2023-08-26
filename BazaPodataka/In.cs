@@ -28,7 +28,19 @@ namespace BazaPodataka
                 {
                     foreach (Load l in Loads.Values)
                     {
-                        
+                        if (l.Timestamp == load.Timestamp)
+                        {
+                            // update forecast and measured values
+                            if (load.ForecastValue != -1)
+                                l.ForecastValue = load.ForecastValue;
+
+                            if (load.MeasuredValue != -1)
+                                l.MeasuredValue = load.MeasuredValue;
+
+                            l.ImportedFileId = importedFile.Id;
+                            exists = true;
+                            break;
+                        }
                     }
 
                     // create a new record
