@@ -36,6 +36,7 @@ namespace BazaPodataka
                     {
                         load.Id = ++LoadsCounter;
                         load.ImportedFileId = importedFile.Id;
+                        LoadedIds.Add(load.Id);
                         Loads.Add(load.Id, load);
                     }
                 }
@@ -43,7 +44,9 @@ namespace BazaPodataka
             }
             else
             {
-                
+                // save audit do dictonary
+                audit.Id = ++AuditsCounter;
+                Audits.Add(audit.Id, audit);
             }
         }
 
