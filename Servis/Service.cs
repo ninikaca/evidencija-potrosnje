@@ -71,7 +71,14 @@ namespace Servis
                         row_counter++;
                     }
 
-                    
+                    csv.Dispose();
+                    csv.Close();
+
+                    if (rows.Length < 23 || rows.Length > 25)
+                    {
+                        okay = false;
+                        error_message = "U datoteci " + filename + " nalazi se neodgovarajući broj redova: " + rows.Length;
+                    }
                 }
             }
             else
@@ -106,6 +113,46 @@ namespace Servis
                 }
             }
 
+            // run calculation
+            Calculation();
+
+            // write in memory output
+            if (where_to_save_data.Equals("i"))
+            {
+                Console.WriteLine("====================================================== LOADS ==================================================");
+                Console.WriteLine("{0,5} {1,30} {2,15} {3,15} {4,15} {5,15} {6,10}", "ID", "TIME", "PROG", "OSTV", "ABS", "SQR", "IFID");
+
+                foreach (Load l in In.Loads.Values)
+                {
+                    Console.WriteLine("{0,5} {1,30} {2,15} {3,15} {4,15} {5,15} {6,10}",
+                                          l.Id, l.Timestamp,
+                                          l.ForecastValue == -1 ? "N/A" : l.ForecastValue.ToString("F6").Replace(',', '.'),
+                                          l.MeasuredValue == -1 ? "N/A" : l.MeasuredValue.ToString("F6").Replace(',', '.'),
+                                          l.AbsolutePercentageDeviation == -1 ? "N/A" : l.AbsolutePercentageDeviation.ToString("F6").Replace(',', '.'),
+                                          l.SquaredDeviation == -1 ? "N/A" : l.SquaredDeviation.ToString("F6").Replace(',', '.'),
+                                          l.ImportedFileId);
+                }
+                Console.WriteLine();
+
+                Console.WriteLine("================================================ AUDITS ===============================================");
+                Console.WriteLine("{0,-5} {1,-30}   {2,-10} {3,-50}", "ID", "TIME", "MSGT", "MSG");
+
+                foreach (Audit a in In.Audits.Values)
+                {
+                    Console.WriteLine("{0,-5} {1,-30}   {2,-10} {3,-50}",
+                                          a.Id, a.Timestamp, a.MessageType, a.Message);
+                }
+                Console.WriteLine();
+
+                Console.WriteLine("============================================= IMPORTED FILES ==========================================");
+                Console.WriteLine("{0,5} {1,50}", "ID", "FILENAME");
+
+                foreach (ImportedFile i in In.ImportedFiles.Values)
+                {
+                    Console.WriteLine("{0,5} {1,50}", i.Id, i.FileName);
+                }
+                Console.WriteLine();
+            }
         }
 
         public void Calculation()
