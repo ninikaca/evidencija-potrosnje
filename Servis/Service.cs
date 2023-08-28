@@ -16,6 +16,7 @@ namespace Servis
     public class Service : IService
     {
         public static List<int> LoadedIds = In.LoadedIds;
+        public event SaveDbDelegate SaveDelegate;
 
         public void LoadSaveDatabase(MemoryStream stream, string filename)
         {
@@ -80,6 +81,7 @@ namespace Servis
 
             if (okay)
             {
+                In.CurrentFile = filename;
                 if (where_to_save_data.Equals("i"))
                 {
                     In.Save(loads, null);
@@ -88,6 +90,7 @@ namespace Servis
                 {
                     Xml.Save(loads, null);
                 }
+                In.CurrentFile = string.Empty;
             }
             else
             {
