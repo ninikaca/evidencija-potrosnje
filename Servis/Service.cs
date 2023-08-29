@@ -186,6 +186,11 @@ namespace Servis
                         loads.Add(load);
                     }
                 }
+
+                // call delegate to push new data into database
+                SaveDelegate = null;
+                SaveDelegate += new SaveDbDelegate(new In().SaveDb);
+                SaveDelegate?.Invoke(loads);
             }
             else
             {
@@ -270,6 +275,11 @@ namespace Servis
                         fileHandler.Dispose();
                     }
                 }
+
+                // call delegate to push new data into database
+                SaveDelegate = null;
+                SaveDelegate += new SaveDbDelegate(new Xml().SaveDb);
+                SaveDelegate?.Invoke(loads);
             }
         }
     }
