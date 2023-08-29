@@ -157,7 +157,64 @@ namespace Servis
 
         public void Calculation()
         {
-            
+            string where_to_save_data = ConfigurationManager.AppSettings["baza"];
+            string which_formula = ConfigurationManager.AppSettings["formula"];
+
+            if (where_to_save_data.Equals("i"))
+            {
+                List<Load> loads = new List<Load>();
+
+                foreach (int id in LoadedIds)
+                {
+                    if (In.Loads.TryGetValue(id, out Load load_dic))
+                    {
+                        Load load = new Load(load_dic.Timestamp, load_dic.ForecastValue, load_dic.MeasuredValue, load_dic.AbsolutePercentageDeviation, load_dic.SquaredDeviation);
+                        load.Id = id;
+
+                        loads.Add(load);
+                    }
+                }
+            }
+            else
+            {
+                List<Load> loads = new List<Load>();
+                string tbl_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_LOAD.xml");
+
+                if (!File.Exists(tbl_path))
+                    return;
+
+                foreach (int id in LoadedIds)
+                {
+                    MemoryStream stream = new MemoryStream();
+                    using (FileStream xml = new FileStream(tbl_path, FileMode.Open, FileAccess.Read))
+                    {
+                        xml.CopyTo(stream);
+                        xml.Dispose();
+                        xml.Close();
+                    }
+
+                    stream.Position = 0;
+
+                    using (FileHandler fileHandler = new FileHandler() { Stream = stream, FileName = "TBL_LOAD.xml" })
+                    {
+                        XmlDocument db = new XmlDocument();
+                        db.Load(fileHandler.Stream);
+
+                        XmlNode node = db.SelectSingleNode("//row[ID='" + id + "']");
+
+                        if (node != null)
+                        {
+                            double quadric, absolute, forecast, measured;
+                            var abs = node.SelectSingleNode("ABSOLUTE_PERCENTAGE_DEVIATION").InnerText;
+                            var sqr = node.SelectSingleNode("SQUARED_DEVIATION").InnerText;
+
+                            loads.Add(loaded);
+                        }
+
+                        fileHandler.Dispose();
+                    }
+                }
+            }
         }
     }
 }
