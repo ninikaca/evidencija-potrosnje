@@ -171,6 +171,18 @@ namespace Servis
                         Load load = new Load(load_dic.Timestamp, load_dic.ForecastValue, load_dic.MeasuredValue, load_dic.AbsolutePercentageDeviation, load_dic.SquaredDeviation);
                         load.Id = id;
 
+                        if (load.ForecastValue != -1 && load.MeasuredValue != -1)
+                        {
+                            if (which_formula.Equals("q")) // quadric
+                            {
+                                load.SquaredDeviation = Math.Pow(((load.MeasuredValue - load.ForecastValue) / load.MeasuredValue), 2);
+                            }
+                            else
+                            {
+                                load.AbsolutePercentageDeviation = ((Math.Abs(load.MeasuredValue - load.ForecastValue) / load.MeasuredValue)) * 100;
+                            }
+                        }
+
                         loads.Add(load);
                     }
                 }
@@ -207,6 +219,50 @@ namespace Servis
                             double quadric, absolute, forecast, measured;
                             var abs = node.SelectSingleNode("ABSOLUTE_PERCENTAGE_DEVIATION").InnerText;
                             var sqr = node.SelectSingleNode("SQUARED_DEVIATION").InnerText;
+
+                            if (!double.TryParse(abs.Replace('.', ','), out absolute))
+                            {
+                                absolute = -1;
+                            }
+
+                            if (!double.TryParse(sqr.Replace('.', ','), out quadric))
+                            {
+                                quadric = -1;
+                            }
+
+                            if (!double.TryParse(node.SelectSingleNode("FORECAST_VALUE").InnerText.Replace('.', ','), out forecast))
+                            {
+                                forecast = -1;
+                            }
+
+                            if (!double.TryParse(node.SelectSingleNode("MEASURED_VALUE").InnerText.Replace('.', ','), out measured))
+                            {
+                                measured = -1;
+                            }
+
+
+                            Load loaded = new Load()
+                            {
+                                Id = int.Parse(node.SelectSingleNode("ID").InnerText),
+                                Timestamp = DateTime.Parse(node.SelectSingleNode("TIME_STAMP").InnerText),
+                                ForecastValue = forecast,
+                                MeasuredValue = measured,
+                                AbsolutePercentageDeviation = absolute,
+                                SquaredDeviation = quadric,
+                                ImportedFileId = int.Parse(node.SelectSingleNode("IMPORTED_FILE_ID").InnerText)
+                            };
+
+                            if (loaded.ForecastValue != -1 && loaded.MeasuredValue != -1)
+                            {
+                                if (which_formula.Equals("q")) // quadric
+                                {
+                                    loaded.SquaredDeviation = Math.Pow(((loaded.MeasuredValue - loaded.ForecastValue) / loaded.MeasuredValue), 2);
+                                }
+                                else
+                                {
+                                    loaded.AbsolutePercentageDeviation = ((Math.Abs(loaded.MeasuredValue - loaded.ForecastValue) / loaded.MeasuredValue)) * 100;
+                                }
+                            }
 
                             loads.Add(loaded);
                         }
