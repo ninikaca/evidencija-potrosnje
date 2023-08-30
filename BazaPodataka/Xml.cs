@@ -16,8 +16,6 @@ namespace BazaPodataka
             string load_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_LOAD.xml");
             string audit_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_AUDIT.xml");
             string imported_file_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_IMPORTED_FILE.xml");
-
-            
         }
 
 
@@ -61,6 +59,12 @@ namespace BazaPodataka
                             string absolute, quadric;
                             if (load.SquaredDeviation == -1) quadric = "N/A"; else quadric = load.SquaredDeviation.ToString().Replace(',', '.');
                             if (load.AbsolutePercentageDeviation == -1) absolute = "N/A"; else absolute = load.AbsolutePercentageDeviation.ToString().Replace(',', '.');
+
+                            if (load.SquaredDeviation != -1)
+                                xe.SelectSingleNode("SQUARED_DEVIATION").InnerText = load.SquaredDeviation.ToString().Replace(',', '.');
+
+                            if (load.AbsolutePercentageDeviation != -1)
+                                xe.SelectSingleNode("ABSOLUTE_PERCENTAGE_DEVIATION").InnerText = load.AbsolutePercentageDeviation.ToString().Replace(',', '.');
                         }
 
                         xml_load.Save(load_path);
