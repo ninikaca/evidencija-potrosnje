@@ -16,6 +16,55 @@ namespace BazaPodataka
             string load_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_LOAD.xml");
             string audit_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_AUDIT.xml");
             string imported_file_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_IMPORTED_FILE.xml");
+
+            if (loads != null)
+            {
+                int max_id_imported = 1;
+                ImportedFile importedFile = new ImportedFile() { FileName = In.CurrentFile };
+
+                // if imported file xml doesn't exist create a new one
+                if (File.Exists(imported_file_path) == false)
+                {
+                    string root_element = "STAVKE";
+                    XDocument xml = new XDocument(new XDeclaration("1.0", "utf-8", "no"), new XElement(root_element));
+                    xml.Save(imported_file_path);
+                }
+
+                // if audit xml doesn't exist create a new one
+                if (File.Exists(audit_path) == false)
+                {
+                    string root_element = "STAVKE";
+                    XDocument xml = new XDocument(new XDeclaration("1.0", "utf-8", "no"), new XElement(root_element));
+                    xml.Save(audit_path);
+                }
+
+                // if loads xml doesn't exist create a new one
+                if (File.Exists(load_path) == false)
+                {
+                    // create a new empty file
+                    string root_element = "rows";
+                    XDocument xml = new XDocument(new XDeclaration("1.0", "utf-8", "no"), new XElement(root_element));
+                    xml.Save(load_path);
+                }
+
+                // if audit xml doesn't exist create a new one
+                if (File.Exists(audit_path) == false)
+                {
+                    string root_element = "STAVKE";
+                    XDocument xml = new XDocument(new XDeclaration("1.0", "utf-8", "no"), new XElement(root_element));
+                    xml.Save(audit_path);
+                }
+            }
+            else
+            {
+                // if audit xml doesn't exist create a new one
+                if (File.Exists(audit_path) == false)
+                {
+                    string root_element = "STAVKE";
+                    XDocument xml = new XDocument(new XDeclaration("1.0", "utf-8", "no"), new XElement(root_element));
+                    xml.Save(audit_path);
+                }
+            }
         }
 
 
