@@ -16,6 +16,8 @@ namespace BazaPodataka
             string load_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_LOAD.xml");
             string audit_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_AUDIT.xml");
             string imported_file_path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TBL_IMPORTED_FILE.xml");
+
+            
         }
 
 
@@ -34,6 +36,18 @@ namespace BazaPodataka
                 stream.Position = 0;
                 using (FileHandler fl = new FileHandler() { Stream = stream, FileName = Path.GetFileName(load_path) })
                 {
+                    XmlDocument xml_load = new XmlDocument();
+                    xml_load.Load(fl.Stream);
+                    fl.Stream.Position = 0;
+                    XDocument xml = XDocument.Load(fl.Stream);
+                    XElement rows = xml.Element("rows");
+                    var elements = xml.Descendants("ID");
+
+                    foreach (Load load in loads)
+                    {
+                        
+                    }
+
                     fl.Dispose();
                 }
             }
