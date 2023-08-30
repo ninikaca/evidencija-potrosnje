@@ -14,8 +14,6 @@ namespace BazaPodataka
         public static string CurrentFile = string.Empty;
 
         public static List<int> LoadedIds = new List<int>();
-    
-        public static List<int> LoadedIds = new List<int>();
 
         public static void Save(List<Load> loads, Audit audit)
         {
