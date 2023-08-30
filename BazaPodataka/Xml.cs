@@ -47,6 +47,89 @@ namespace BazaPodataka
                     xml.Save(load_path);
                 }
 
+                // now we can write imported data to xml file
+                MemoryStream stream = new MemoryStream();
+                using (FileStream fs = new FileStream(imported_file_path, FileMode.Open, FileAccess.Read))
+                {
+                    fs.CopyTo(stream);
+                    fs.Dispose();
+                    fs.Close();
+
+                    stream.Position = 0;
+                    using (FileHandler fl = new FileHandler() { Stream = stream, FileName = Path.GetFileName(imported_file_path) })
+                    {
+                        XDocument xml = XDocument.Load(fl.Stream);
+                        XElement stavke = xml.Element("STAVKE");
+                        var elements = xml.Descendants("ID");
+
+                        try
+                        {
+                            max_id_imported = elements.Max(e => int.Parse(e.Value));
+                            importedFile.Id = ++max_id_imported;
+                        }
+                        catch
+                        {
+                            importedFile.Id = 1;
+                        }
+
+                        // log imported file info into xml
+                        var im_file = new XElement("row");
+                        im_file.Add(new XElement("ID", (importedFile.Id).ToString()));
+                        im_file.Add(new XElement("FILE_NAME", importedFile.FileName));
+
+                        stavke.Add(im_file);
+                        xml.Save(imported_file_path);
+
+                        fl.Dispose();
+                    }
+                }
+
+                // now save data from load to xml
+                stream = new MemoryStream();
+                using (FileStream fs = new FileStream(load_path, FileMode.Open, FileAccess.Read))
+                {
+                    fs.CopyTo(stream);
+                    fs.Dispose();
+                    fs.Close();
+
+                    stream.Position = 0;
+                    using (FileHandler fl = new FileHandler() { Stream = stream, FileName = Path.GetFileName(load_path) })
+                    {
+                        XmlDocument xml_load = new XmlDocument();
+                        xml_load.Load(fl.Stream);
+                        fl.Stream.Position = 0;
+                        XDocument xml = XDocument.Load(fl.Stream);
+                        XElement rows = xml.Element("rows");
+                        var elements = xml.Descendants("ID");
+                        int max_load_id;
+
+                        try
+                        {
+                            max_load_id = elements.Max(e => int.Parse(e.Value));
+                        }
+                        catch
+                        {
+                            max_load_id = 0;
+                        }
+
+                        foreach (Load l in loads)
+                        {
+                            XmlNode xe;
+
+                            try
+                            {
+                                xe = xml_load.SelectSingleNode("//row[TIME_STAMP='" + l.Timestamp.ToString("yyyy-MM-dd HH:mm") + "']");
+                            }
+                            catch
+                            {
+                                xe = null;
+                            }
+                        }
+
+                        fl.Dispose();
+                    }
+                }
+
                 // if audit xml doesn't exist create a new one
                 if (File.Exists(audit_path) == false)
                 {
