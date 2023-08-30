@@ -54,6 +54,47 @@ namespace BazaPodataka
                     XDocument xml = new XDocument(new XDeclaration("1.0", "utf-8", "no"), new XElement(root_element));
                     xml.Save(audit_path);
                 }
+
+                // save audit about successfull read of csv
+                Audit a = new Audit(DateTime.Now, MessageType.Info, "Datoteka " + In.CurrentFile + " je uspešno pročitana");
+
+                stream = new MemoryStream();
+                using (FileStream csv = new FileStream(audit_path, FileMode.Open, FileAccess.Read))
+                {
+                    csv.CopyTo(stream);
+                    csv.Dispose();
+                    csv.Close();
+
+                    stream.Position = 0;
+                    using (FileHandler fl = new FileHandler() { Stream = stream, FileName = Path.GetFileName(audit_path) })
+                    {
+                        XDocument xml = XDocument.Load(fl.Stream);
+                        XElement stavke = xml.Element("STAVKE");
+                        var elements = xml.Descendants("ID");
+                        int max_id_audit;
+
+                        try
+                        {
+                            max_id_audit = elements.Max(e => int.Parse(e.Value));
+                        }
+                        catch
+                        {
+                            max_id_audit = 0;
+                        }
+
+                        // log imported file info into xml
+                        var au_file = new XElement("row");
+                        au_file.Add(new XElement("ID", (max_id_audit + 1).ToString()));
+                        au_file.Add(new XElement("TIME_STAMP", a.Timestamp.ToString("yyyy-MM-dd HH:mm.fff")));
+                        au_file.Add(new XElement("MESSAGE_TYPE", a.MessageType.ToString()));
+                        au_file.Add(new XElement("MESSAGE", a.Message));
+
+                        stavke.Add(au_file);
+                        xml.Save(audit_path);
+
+                        fl.Dispose();
+                    }
+                }
             }
             else
             {
