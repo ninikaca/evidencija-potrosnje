@@ -45,7 +45,25 @@ namespace BazaPodataka
 
                     foreach (Load load in loads)
                     {
-                        
+                        XmlNode xe;
+
+                        try
+                        {
+                            xe = xml_load.SelectSingleNode("//row[TIME_STAMP='" + load.Timestamp.ToString("yyyy-MM-dd HH:mm") + "']");
+                        }
+                        catch
+                        {
+                            xe = null;
+                        }
+
+                        if (xe != null)
+                        {
+                            string absolute, quadric;
+                            if (load.SquaredDeviation == -1) quadric = "N/A"; else quadric = load.SquaredDeviation.ToString().Replace(',', '.');
+                            if (load.AbsolutePercentageDeviation == -1) absolute = "N/A"; else absolute = load.AbsolutePercentageDeviation.ToString().Replace(',', '.');
+                        }
+
+                        xml_load.Save(load_path);
                     }
 
                     fl.Dispose();
