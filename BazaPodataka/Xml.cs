@@ -124,6 +124,42 @@ namespace BazaPodataka
                             {
                                 xe = null;
                             }
+
+                            if (xe == null)
+                            {
+                                string forecast, measured, absolute, quadric;
+                                if (l.ForecastValue == -1) forecast = "N/A"; else forecast = l.ForecastValue.ToString().Replace(',', '.');
+                                if (l.MeasuredValue == -1) measured = "N/A"; else measured = l.MeasuredValue.ToString().Replace(',', '.');
+                                if (l.SquaredDeviation == -1) quadric = "N/A"; else quadric = l.SquaredDeviation.ToString().Replace(',', '.');
+                                if (l.AbsolutePercentageDeviation == -1) absolute = "N/A"; else absolute = l.AbsolutePercentageDeviation.ToString().Replace(',', '.');
+
+                                XElement xen = new XElement("row");
+                                xen.Add(new XElement("ID", (max_load_id + 1).ToString()));
+                                xen.Add(new XElement("TIME_STAMP", l.Timestamp.ToString("yyyy-MM-dd HH:mm")));
+                                xen.Add(new XElement("FORECAST_VALUE", forecast));
+                                xen.Add(new XElement("MEASURED_VALUE", measured));
+                                xen.Add(new XElement("ABSOLUTE_PERCENTAGE_DEVIATION", absolute));
+                                xen.Add(new XElement("SQUARED_DEVIATION", quadric));
+                                xen.Add(new XElement("IMPORTED_FILE_ID", importedFile.Id.ToString()));
+
+                                rows.Add(xen);
+
+                                max_load_id++;
+                                In.LoadedIds.Add(max_load_id);
+                                xml.Save(load_path);
+                            }
+                            else
+                            {
+                                if (l.ForecastValue != -1)
+                                    xe.SelectSingleNode("FORECAST_VALUE").InnerText = l.ForecastValue.ToString().Replace(',', '.');
+
+                                if (l.MeasuredValue != -1)
+                                    xe.SelectSingleNode("MEASURED_VALUE").InnerText = l.MeasuredValue.ToString().Replace(',', '.');
+
+                                l.Id = int.Parse(xe.SelectSingleNode("ID").InnerText);
+                                In.LoadedIds.Add(l.Id);
+                                xml_load.Save(load_path);
+                            }
                         }
 
                         fl.Dispose();
